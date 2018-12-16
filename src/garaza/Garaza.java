@@ -21,7 +21,7 @@ public class Garaza implements Serializable{
         }
     }
     
-    public boolean dozvoljenUlazUGrazu(){
+    public boolean dozvoljenUlaz(){
         boolean dozvoljeno= true;
         for(Platforma p:platforme){
             dozvoljeno &= p.popunjena;
