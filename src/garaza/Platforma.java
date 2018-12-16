@@ -24,9 +24,9 @@ public class Platforma implements Serializable{
                     matrica[i][j].parkingMjesto=true;
                     if(j==7)
                         matrica[i][j].parkingMjesto=true;
-                    if((i<10) && j==3)
+                    if(i<10 && j==3)
                         matrica[i][j].parkingMjesto=true;
-                    if((i<10) && j==4)
+                    if(i<10 && j==4)
                         matrica[i][j].parkingMjesto=true;
                 }
             }            
