@@ -1,6 +1,12 @@
 package garaza;
 
+import aplikacija.Evidencija;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.logging.Level;
 
 /**
  *
@@ -47,5 +53,23 @@ public class Garaza implements Serializable{
             p.popunjena=true;
         }
         System.out.println("Nakon popunjavanja svih platformi dozvoljen ulaz u grazu: " + garaza.dozvoljenUlaz());
+    }
+    
+    public void serijalizuj(){
+        try (FileOutputStream fos = new FileOutputStream("./garazaFajlovi/garaza.ser");
+                ObjectOutputStream out = new ObjectOutputStream(fos)) {
+            out.writeObject(platforme);
+        } catch (Exception e) {
+            Evidencija.log(Level.WARNING, Garaza.class.getName(), e);
+        }
+    }
+    
+    public void deserijalizuj() {
+        try (FileInputStream fis = new FileInputStream("./garazaFajlovi/garaza.ser");
+                ObjectInputStream in = new ObjectInputStream(fis)) {
+            platforme = (Platforma []) in.readObject();
+        } catch (Exception e) {
+            Evidencija.log(Level.WARNING, Garaza.class.getName(), e);
+        }
     }
 }
