@@ -4,12 +4,18 @@ package vozila;
  *
  * @author Goran Preradovic 
  */
-public class PolicijskiKombi extends Kombi{
+public class PolicijskiKombi extends Kombi implements PolicijskoVozilo{
     
-    public PolicijskiKombi(String name, String chassisNumber, String engineNumber,
-            String image, String registrationNumber, int loadCapacity) {
+    public boolean upaljenaRotacija;
+    
+    public PolicijskiKombi(String naziv, String brSasije, String brMotora,
+            String foto, String registarskiBroj, int nosivost) {
         
-        super(name, chassisNumber, engineNumber, image, registrationNumber, loadCapacity);
+        super(naziv, brSasije, brMotora, foto, registarskiBroj, nosivost);
+        tip="Policijski kombi";
+        upaljenaRotacija=false;
     }
+    
+    
     
 }

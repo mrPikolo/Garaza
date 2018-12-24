@@ -6,13 +6,14 @@ package vozila;
  */
 public class Automobil extends Vozilo{
     
-    int doorNumber;
+    int brVrata;
     
-    public Automobil(String name, String chassisNumber, String engineNumber,
-            String image, String registrationNumber, int doorNumber) {
+    public Automobil(String naziv, String brSasije, String brMotora,
+            String foto, String registarskiBroj, int brVrata) {
         
-        super(name, chassisNumber, engineNumber, image, registrationNumber);
-        this.doorNumber = doorNumber;        
+        super(naziv, brSasije, brMotora, foto, registarskiBroj);
+        this.brVrata = brVrata;   
+        tip="Automobil";
     }
     
 }

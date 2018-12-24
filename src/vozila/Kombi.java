@@ -6,13 +6,14 @@ package vozila;
  */
 public class Kombi extends Vozilo{
     
-    int loadCapacity;
+    int nosivost;
 
-    public Kombi(String name, String chassisNumber, String engineNumber,
-            String image, String registrationNumber,int loadCapacity) {
+    public Kombi(String naziv, String brSasije, String brMotora,
+            String foto, String registarskiBroj,int nosivost) {
         
-        super(name, chassisNumber, engineNumber, image, registrationNumber);
-        this.loadCapacity = loadCapacity;
+        super(naziv, brSasije, brMotora, foto, registarskiBroj);
+        this.nosivost = nosivost;
+        tip="Kombi";
     }
     
     

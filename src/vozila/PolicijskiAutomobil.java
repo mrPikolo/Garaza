@@ -4,12 +4,16 @@ package vozila;
  *
  * @author Goran Preradovic
  */
-public class PolicijskiAutomobil extends Automobil{
+public class PolicijskiAutomobil extends Automobil implements PolicijskoVozilo{
     
-    public PolicijskiAutomobil(String name, String chassisNumber, String engineNumber,
-            String image, String registrationNumber, int doorNumber) {
+    public boolean upaljenaRotacija;
+    
+    public PolicijskiAutomobil(String naziv, String brSasije, String brMotora,
+            String foto, String registarskiBroj, int brVrata) {
         
-        super(name, chassisNumber, engineNumber, image, registrationNumber, doorNumber);
+        super(naziv, brSasije, brMotora, foto, registarskiBroj, brVrata);
+        tip="Policijski automobil";
+        upaljenaRotacija= false;
     }
     
 }

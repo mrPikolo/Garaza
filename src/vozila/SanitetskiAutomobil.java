@@ -6,10 +6,14 @@ package vozila;
  */
 public class SanitetskiAutomobil extends Automobil{
     
-    public SanitetskiAutomobil(String name, String chassisNumber, String engineNumber,
-            String image, String registrationNumber, int doorNumber) {
+    public boolean upaljenaRotacija;
+    
+    public SanitetskiAutomobil(String naziv, String brSasije, String brMotora,
+            String foto, String registarskiBroj, int brVrata) {
         
-        super(name, chassisNumber, engineNumber, image, registrationNumber, doorNumber);
+        super(naziv, brSasije, brMotora, foto, registarskiBroj, brVrata);
+        tip="Sanitetski automobil";
+        upaljenaRotacija=false;
     }
     
 }

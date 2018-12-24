@@ -6,10 +6,14 @@ package vozila;
  */
 public class VatrogasniKombi extends Kombi{
     
-    public VatrogasniKombi(String name, String chassisNumber, String engineNumber, 
-            String image, String registrationNumber, int loadCapacity) {
+    public boolean upaljenaRotacija;
+    
+    public VatrogasniKombi(String naziv, String brSasije, String brMotora, 
+            String foto, String registarskiBroj, int nosivost) {
         
-        super(name, chassisNumber, engineNumber, image, registrationNumber, loadCapacity);
+        super(naziv, brSasije, brMotora, foto, registarskiBroj, nosivost);
+        tip="Vatrogasni kombi";
+        upaljenaRotacija=false;
     }
     
 }

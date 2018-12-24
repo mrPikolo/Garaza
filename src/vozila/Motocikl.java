@@ -6,10 +6,11 @@ package vozila;
  */
 public class Motocikl extends Vozilo{
     
-    public Motocikl(String name, String chassisNumber, String engineNumber,
-            String image, String registrationNumber) {
+    public Motocikl(String naziv, String brSasije, String brMotora,
+            String foto, String registarskiBroj) {
         
-        super(name, chassisNumber, engineNumber, image, registrationNumber);
+        super(naziv, brSasije, brMotora, foto, registarskiBroj);
+        tip="Motocikl";
     }
     
 }
