@@ -22,5 +22,7 @@ public class Vozilo implements Serializable{
         this.registarskiBroj = registarskiBroj;
     }
     
-    
+    public String toString(){
+        return tip + " " + registarskiBroj;
+    }
 }

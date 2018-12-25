@@ -17,7 +17,9 @@ public class Evidencija {
         try {
             handler = new FileHandler("./garazaFajlovi/error.log");
         } catch (Exception ex) {
-            Logger.getLogger(Evidencija.class.getName()).log(Level.SEVERE, null, ex);
+            Logger logger = Logger.getLogger(Evidencija.class.getName());
+            logger.addHandler(handler);
+            logger.log(Level.SEVERE, null, ex);
         } 
     }
     

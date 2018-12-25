@@ -38,10 +38,14 @@ public class Platforma implements Serializable{
     
     public static void main(String [] args){
         Platforma platforma = new Platforma();
+        platforma.ispis();
         
-        for(int i=0;i<platforma.matrica.length;i++){
-            for(int j=0;j<platforma.matrica[i].length;j++){
-                System.out.println("matrica["+i+"]["+j+"]: "+platforma.matrica[i][j]);
+    }
+    
+    public void ispis(){
+        for(int i=0;i<matrica.length;i++){
+            for(int j=0;j<matrica[i].length;j++){
+                System.out.println("matrica["+i+"]["+j+"]: "+matrica[i][j]);
             }
         }
     }
