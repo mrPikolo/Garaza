@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="404.0" prefWidth="747.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="korisnici.administrator.AdminController">
+   <top>
+      <VBox prefHeight="84.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label text="Platforma">
+               <font>
+                  <Font name="System Bold Italic" size="12.0" />
+               </font>
+            </Label>
+            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="30.0">
+               <children>
+                  <Button fx:id="dodajPlatformuButton" mnemonicParsing="false" text="Dodaj" />
+                  <ChoiceBox fx:id="izborPlatformeChoiceBox" prefWidth="150.0" />
+               </children>
+            </HBox>
+            <Separator prefWidth="200.0" />
+         </children>
+         <BorderPane.margin>
+            <Insets left="10.0" right="10.0" top="10.0" />
+         </BorderPane.margin>
+      </VBox>
+   </top>
+   <right>
+      <VBox prefHeight="206.0" prefWidth="158.0" spacing="10.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label />
+            <Label layoutX="10.0" layoutY="27.0" text="Tip:" />
+            <ComboBox fx:id="tipVozilaComboBox" prefWidth="150.0" />
+            <Button fx:id="dodajVoziloButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="60.0" text="Dodaj" />
+            <Button fx:id="izmjeniVoziloButton" layoutX="10.0" layoutY="86.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="60.0" text="Izmjeni" />
+            <Button fx:id="obrisiVoziloButton" layoutX="10.0" layoutY="161.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="60.0" text="Obriši" />
+         </children>
+         <BorderPane.margin>
+            <Insets right="10.0" />
+         </BorderPane.margin>
+      </VBox>
+   </right>
+   <center>
+      <VBox maxWidth="-Infinity" minWidth="-Infinity" prefHeight="206.0" prefWidth="559.0" spacing="10.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label text="Vozilo">
+               <font>
+                  <Font name="System Bold Italic" size="12.0" />
+               </font>
+            </Label>
+            <TableView fx:id="tabelaVozlaTableView" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="171.0" prefWidth="555.0">
+              <columns>
+                  <TableColumn fx:id="tipVozilaTableColumn" prefWidth="88.0" text="Tip" />
+                  <TableColumn fx:id="nazivVozilaTableColumn" prefWidth="134.0" text="Naziv" />
+                  <TableColumn fx:id="brojSasijeVozilaTableColumn" prefWidth="75.0" text="Broj šasije" />
+                <TableColumn fx:id="brojMotoraVozilaTableColumn" prefWidth="75.0" text="Broj motora" />
+                <TableColumn fx:id="registarskiBrojVozilaTableColumn" prefWidth="75.0" text="Registarski broj" />
+              </columns>
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
+            </TableView>
+         </children>
+         <BorderPane.margin>
+            <Insets left="10.0" right="10.0" top="10.0" />
+         </BorderPane.margin>
+      </VBox>
+   </center>
+   <bottom>
+      <VBox prefHeight="84.0" prefWidth="718.0" spacing="5.0" BorderPane.alignment="CENTER">
+         <children>
+            <Separator prefWidth="200.0" />
+            <HBox alignment="CENTER" prefHeight="76.0" prefWidth="718.0" spacing="10.0">
+               <children>
+                  <Label text="Korisnička aplikacija" />
+                  <Button fx:id="pokreniKorisnikaButton" mnemonicParsing="false" text="Pokreni" />
+               </children>
+            </HBox>
+         </children>
+         <BorderPane.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </BorderPane.margin>
+         <padding>
+            <Insets top="10.0" />
+         </padding>
+      </VBox>
+   </bottom>
+</BorderPane>
