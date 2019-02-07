@@ -26,6 +26,15 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import garaza.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.WindowEvent;
+import vozila.Automobil;
+import vozila.Vozilo;
 
 /**
  * FXML Controller class
@@ -37,39 +46,43 @@ public class AdminController implements Initializable {
     public static String tipVozila="";
     
     public static String dodajIliIzmjeniVozilo="";
+    
+    public static int trenutnaPlatforma = 0;
+    
+    public static ObservableList listaVozila = FXCollections.observableArrayList();
 
      @FXML
     private Button obrisiVoziloButton;
 
     @FXML
-    private TableColumn<?, ?> registarskiBrojVozilaTableColumn;
+    private TableColumn<Vozilo, String> registarskiBrojVozilaTableColumn;
 
     @FXML
     private Button dodajVoziloButton;
 
     @FXML
-    private TableView<?> tabelaVozlaTableView;
+    private TableView<Vozilo> tabelaVozlaTableView;
 
     @FXML
     private ComboBox<?> tipVozilaComboBox;
 
     @FXML
-    private ChoiceBox<?> izborPlatformeChoiceBox;
+    private ComboBox<?> izborPlatformeComboBox;
 
     @FXML
-    private TableColumn<?, ?> tipVozilaTableColumn;
+    private TableColumn<Vozilo, String> tipVozilaTableColumn;
 
     @FXML
-    private TableColumn<?, ?> nazivVozilaTableColumn;
+    private TableColumn<Vozilo, String> nazivVozilaTableColumn;
 
     @FXML
     private Button izmjeniVoziloButton;
 
     @FXML
-    private TableColumn<?, ?> brojSasijeVozilaTableColumn;
+    private TableColumn<Vozilo, String> brojSasijeVozilaTableColumn;
 
     @FXML
-    private TableColumn<?, ?> brojMotoraVozilaTableColumn;
+    private TableColumn<Vozilo, String> brojMotoraVozilaTableColumn;
 
     @FXML
     private Button pokreniKorisnikaButton;
@@ -78,7 +91,9 @@ public class AdminController implements Initializable {
     private Button dodajPlatformuButton;
     
     @Override
-    public void initialize(URL url, ResourceBundle rb) {       
+    public void initialize(URL url, ResourceBundle rb) { 
+        
+        popuniListuPlatformi();
         
         ObservableList listaVozila = FXCollections.observableArrayList("Automobil","Policijski automobil","Sanitetski automobil",
                 "Kombi","Sanitetski kombi","Policijski kombi","Vatrogasni kombi",
@@ -86,12 +101,26 @@ public class AdminController implements Initializable {
         tipVozilaComboBox.setItems(listaVozila); 
         tipVozilaComboBox.getSelectionModel().selectFirst();
         
+        tipVozilaTableColumn.setCellValueFactory(new PropertyValueFactory<Vozilo, String>("tip"));
+        nazivVozilaTableColumn.setCellValueFactory(new PropertyValueFactory<Vozilo, String>("naziv"));
+        brojSasijeVozilaTableColumn.setCellValueFactory(new PropertyValueFactory<Vozilo, String>("brSasije"));
+        brojMotoraVozilaTableColumn.setCellValueFactory(new PropertyValueFactory<Vozilo, String>("brMotora"));
+        registarskiBrojVozilaTableColumn.setCellValueFactory(new PropertyValueFactory<Vozilo, String>("registarskiBroj"));
+        
+        //popuniti tabelu sa listom vozila sa platforme
+       
+        tabelaVozlaTableView.setItems(vozilaNaPlatformi(trenutnaPlatforma));
+        
         dodajVoziloButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 tipVozila=tipVozilaComboBox.getValue().toString();
                 dodajIliIzmjeniVozilo="Dodaj vozilo";
-                otvoriVoziloGUI();                
+                redniBrojOdabranePlatforme();
+                otvoriVoziloGUI(); 
+                System.out.println("TEST");    
+                tabelaVozlaTableView.setItems(vozilaNaPlatformi(trenutnaPlatforma));
+
             }
         });
         
@@ -100,10 +129,47 @@ public class AdminController implements Initializable {
             public void handle(ActionEvent event) {
                 tipVozila=tipVozilaComboBox.getValue().toString();
                 dodajIliIzmjeniVozilo="Izmjeni vozilo";
+                redniBrojOdabranePlatforme();
                 otvoriVoziloGUI();                
             }
         });
-    }    
+        
+        dodajPlatformuButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+
+                if (App.garaza.dodajPlatformu()) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION,
+                            "Uspjesno ste se dodali novu platformu!", ButtonType.OK);
+                    alert.showAndWait();
+                }
+                popuniListuPlatformi();
+            }
+        });
+    }  
+    
+    public ObservableList listaAutomobilaNaPlatformi() {
+        Platforma p = Garaza.listaPlatformi.get(trenutnaPlatforma);
+        for(Vozilo v: (p.listaVozilaNaPlatformi))
+            listaVozila.add(v);
+        return listaVozila;
+    }
+    
+    public static void popuniListuNaPlatformi(int brojPlatforme){
+        System.out.println("Broj platforme: " + (brojPlatforme-1));
+        Platforma p = Garaza.listaPlatformi.get(brojPlatforme-1);
+        
+        for(Vozilo v: (p.listaVozilaNaPlatformi))
+            listaVozila.add(v);
+       // System.out.println("iz popuniListuNaPlatformi(int brojPlatforme) je lista: " + listaVozila);
+    }
+    
+    private void popuniListuPlatformi(){
+        ObservableList listaRednihBrojevaPlatformi = FXCollections.observableArrayList();
+        for(int i=0;i<Garaza.listaPlatformi.size();i++)
+            listaRednihBrojevaPlatformi.add(i+1);
+        izborPlatformeComboBox.setItems(listaRednihBrojevaPlatformi);
+    }
     
     private void otvoriVoziloGUI() {
         try {
@@ -114,10 +180,24 @@ public class AdminController implements Initializable {
             Scene myScene = new Scene(myPane);
             stage.setScene(myScene);
             stage.setTitle("Vozilo");
-            stage.show();
+            stage.showAndWait();
         } catch (IOException ex) {
             Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public void redniBrojOdabranePlatforme(){      
+        trenutnaPlatforma = Integer.valueOf(izborPlatformeComboBox.getValue().toString()); 
+    }
+    
+    public static ObservableList<Vozilo> vozilaNaPlatformi(int brojPlatforme)
+    {       
+        int broj = brojPlatforme==0?0:brojPlatforme-1;
+        
+        Platforma trenutanPlatforma=Garaza.listaPlatformi.get(broj);
+       // System.out.println("::"+trenutanPlatforma.listaVozilaNaPlatformi.size()+"br"+broj);
+        ObservableList<Vozilo> vozila=FXCollections.observableArrayList(trenutanPlatforma.listaVozilaNaPlatformi);
+        return vozila;
     }
     
 }
