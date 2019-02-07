@@ -1,6 +1,8 @@
 package garaza;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import vozila.Vozilo;
 
 /**
  *
@@ -11,6 +13,7 @@ public class Platforma implements Serializable{
     public int brSlobodnihMjesta;
     public boolean popunjena;
     public MjestoNaPlatformi[][] matrica;
+    public ArrayList<Vozilo> listaVozilaNaPlatformi = new ArrayList<>();
     
     public Platforma(){
         
@@ -34,12 +37,10 @@ public class Platforma implements Serializable{
         
         brSlobodnihMjesta = 28;
         popunjena=false;
-    }
+    }    
     
-    public static void main(String [] args){
-        Platforma platforma = new Platforma();
-        platforma.ispis();
-        
+    public ArrayList<Vozilo> getListaVozilaNaPlatformi() {
+        return listaVozilaNaPlatformi;
     }
     
     public void ispis(){
