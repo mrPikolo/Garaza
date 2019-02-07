@@ -20,7 +20,7 @@
             <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="30.0">
                <children>
                   <Button fx:id="dodajPlatformuButton" mnemonicParsing="false" text="Dodaj" />
-                  <ChoiceBox fx:id="izborPlatformeChoiceBox" prefWidth="150.0" />
+                  <ComboBox fx:id="izborPlatformeComboBox" prefWidth="150.0" promptText="Izbor platforme" />
                </children>
             </HBox>
             <Separator prefWidth="200.0" />
@@ -53,13 +53,13 @@
                   <Font name="System Bold Italic" size="12.0" />
                </font>
             </Label>
-            <TableView fx:id="tabelaVozlaTableView" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="171.0" prefWidth="555.0">
+            <TableView fx:id="tabelaVozlaTableView" prefHeight="200.0" prefWidth="200.0">
               <columns>
-                  <TableColumn fx:id="tipVozilaTableColumn" prefWidth="88.0" text="Tip" />
-                  <TableColumn fx:id="nazivVozilaTableColumn" prefWidth="134.0" text="Naziv" />
+                <TableColumn fx:id="tipVozilaTableColumn" prefWidth="75.0" text="Tip" />
+                <TableColumn fx:id="nazivVozilaTableColumn" prefWidth="75.0" text="Naziv" />
                   <TableColumn fx:id="brojSasijeVozilaTableColumn" prefWidth="75.0" text="Broj šasije" />
-                <TableColumn fx:id="brojMotoraVozilaTableColumn" prefWidth="75.0" text="Broj motora" />
-                <TableColumn fx:id="registarskiBrojVozilaTableColumn" prefWidth="75.0" text="Registarski broj" />
+                  <TableColumn fx:id="brojMotoraVozilaTableColumn" prefWidth="75.0" text="Broj motora" />
+                  <TableColumn fx:id="registarskiBrojVozilaTableColumn" prefWidth="75.0" text="Registarski broj" />
               </columns>
                <columnResizePolicy>
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
