@@ -5,10 +5,12 @@
  */
 package aplikacija;
 
+import garaza.Garaza;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
+import static javafx.application.Application.launch;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -24,6 +26,7 @@ import korisnici.administrator.*;
  * @author Goran
  */
 public class App extends Application {
+    public static Garaza garaza;
     
     @Override
     public void start(Stage primaryStage) {
@@ -46,6 +49,7 @@ public class App extends Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        garaza = new Garaza();
         launch(args);
     }
     
