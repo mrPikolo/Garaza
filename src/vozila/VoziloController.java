@@ -21,6 +21,17 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import korisnici.administrator.AdminController;
+import garaza.*;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
+import javafx.stage.FileChooser;
+import static korisnici.administrator.AdminController.trenutnaPlatforma;
 
 /**
  * FXML Controller class
@@ -62,8 +73,32 @@ public class VoziloController implements Initializable {
     @FXML
     private CheckBox upaljenaRotacijaCheckBox;
     
+    public static Vozilo izmjenjenoVozilo;
+    
+    public static String putanjaFotoVozila = ".\\src\\garazaFajlovi\\foto";
+    public static int fotoID=0;
+    public String fileFoto ="";
+    
     @Override
-    public void initialize(URL url, ResourceBundle rb) {                   
+    public void initialize(URL url, ResourceBundle rb) {
+        
+        dodajFotografijuButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                FileChooser choose=new FileChooser();
+                File putanjaOdabraneSlike=choose.showOpenDialog((Stage) dodajButton.getScene().getWindow());
+                fotoID++;
+                fileFoto=putanjaFotoVozila + putanjaOdabraneSlike.getAbsolutePath().substring(putanjaOdabraneSlike.getAbsolutePath().lastIndexOf('\\'));
+                File novaPutanja = new File(fileFoto);
+                
+                try {
+                    //novaPutanja.createNewFile();
+                    Files.copy(putanjaOdabraneSlike.toPath(),novaPutanja.toPath());
+                } catch (IOException ex) {
+                    Logger.getLogger(VoziloController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }   
+        });
 
         if ((AdminController.tipVozila.equals("Motocikl")) || AdminController.tipVozila.contains("motocikl")) {
             brojVrataIliNosivostHBox.setVisible(false);
@@ -82,12 +117,124 @@ public class VoziloController implements Initializable {
             if(AdminController.tipVozila.equals("Kombi"))
                     upaljenaRotacijaCheckBox.setVisible(false);
         }
+        
+        if (AdminController.dodajIliIzmjeniVozilo.equals("Izmjeni vozilo")) {
+            Vozilo v = Garaza.listaPlatformi.get(AdminController.trenutnaPlatforma - 1).zamjenaVozila;
+            // prikazi podatke vozila za zamjenu
+            nazivTextField.setText(v.naziv);
+            brojMotoraTextField.setText(v.brMotora);
+            brojSasijeTextField.setText(v.brSasije);
+            registarskiBrojTextField.setText(v.registarskiBroj);
+            
+            if (v.tip.contains("ski") || v.tip.contains("sni")) {
+                upaljenaRotacijaCheckBox.selectedProperty().set(true);
+            }
+
+            if (v.tip.contains("kombi") || v.tip.contains("Kombi")) {
+                Kombi k = (Kombi) v;
+                brojVrataIliNosivostTextField.setText(String.valueOf(k.nosivost));
+            }
+            
+            if (v.tip.contains("automobil") || v.tip.contains("Automobil")) {
+                Automobil a = (Automobil) v;
+                brojVrataIliNosivostTextField.setText(String.valueOf(a.brVrata));
+            }
+           
+        }    
 
         if ("Dodaj vozilo".equals(AdminController.dodajIliIzmjeniVozilo)) {
             izmjeniButton.setVisible(false);
         } else {
             dodajButton.setVisible(false);
         }
+        
+        izmjeniButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                String tipVozila = Garaza.listaPlatformi.get(AdminController.trenutnaPlatforma - 1).zamjenaVozila.tip;
+                boolean izmjenjeno = false;
+                
+                switch (tipVozila) {
+
+                    case "Automobil": {
+                        Automobil a = new Automobil(nazivTextField.getText(), brojSasijeTextField.getText(), brojMotoraTextField.getText(), fileFoto, registarskiBrojTextField.getText(), Integer.valueOf(brojVrataIliNosivostTextField.getText()));
+                        izmjenjeno = App.garaza.izmjeniVoziloNaPlatformi(AdminController.trenutnaPlatforma, a);
+                        if(izmjenjeno)
+                            izmjenjenoVozilo=a;
+                        break;
+                    }
+                    case "Kombi": {
+                        Kombi k = new Kombi(nazivTextField.getText(), brojSasijeTextField.getText(), brojMotoraTextField.getText(), fileFoto, registarskiBrojTextField.getText(), Integer.valueOf(brojVrataIliNosivostTextField.getText()));
+                        izmjenjeno = App.garaza.izmjeniVoziloNaPlatformi(AdminController.trenutnaPlatforma, k);
+                        if(izmjenjeno)
+                            izmjenjenoVozilo=k;
+                        break;
+                    }
+                    case "Motocikl": {
+                        Motocikl m = new Motocikl(nazivTextField.getText(), brojSasijeTextField.getText(), brojMotoraTextField.getText(), fileFoto, registarskiBrojTextField.getText());
+                        izmjenjeno = App.garaza.izmjeniVoziloNaPlatformi(AdminController.trenutnaPlatforma, m);
+                        if(izmjenjeno)
+                            izmjenjenoVozilo=m;
+                        break;
+                    }
+
+                    case "Policijski automobil": {
+                        PolicijskiAutomobil a = new PolicijskiAutomobil(nazivTextField.getText(), brojSasijeTextField.getText(), brojMotoraTextField.getText(), fileFoto, registarskiBrojTextField.getText(), Integer.valueOf(brojVrataIliNosivostTextField.getText()));
+                        izmjenjeno = App.garaza.izmjeniVoziloNaPlatformi(AdminController.trenutnaPlatforma, a);
+                        if(izmjenjeno)
+                            izmjenjenoVozilo=a;
+                        break;
+                    }
+                    case "Sanitetski automobil": {
+                        SanitetskiAutomobil a = new SanitetskiAutomobil(nazivTextField.getText(), brojSasijeTextField.getText(), brojMotoraTextField.getText(), fileFoto, registarskiBrojTextField.getText(), Integer.valueOf(brojVrataIliNosivostTextField.getText()));
+                        izmjenjeno = App.garaza.izmjeniVoziloNaPlatformi(AdminController.trenutnaPlatforma, a);
+                        if(izmjenjeno)
+                            izmjenjenoVozilo=a;
+                        break;
+                    }
+                    case "Policijski kombi": {
+                        PolicijskiKombi k = new PolicijskiKombi(nazivTextField.getText(), brojSasijeTextField.getText(), brojMotoraTextField.getText(), "foto", registarskiBrojTextField.getText(), Integer.valueOf(brojVrataIliNosivostTextField.getText()));
+                        izmjenjeno = App.garaza.izmjeniVoziloNaPlatformi(AdminController.trenutnaPlatforma, k);
+                        if(izmjenjeno)
+                            izmjenjenoVozilo=k;
+                        break;
+                    }
+                    case "Sanitetski kombi": {
+                        SanitetskiKombi k = new SanitetskiKombi(nazivTextField.getText(), brojSasijeTextField.getText(), brojMotoraTextField.getText(), fileFoto, registarskiBrojTextField.getText(), Integer.valueOf(brojVrataIliNosivostTextField.getText()));
+                        izmjenjeno = App.garaza.izmjeniVoziloNaPlatformi(AdminController.trenutnaPlatforma, k);
+                        if(izmjenjeno)
+                            izmjenjenoVozilo=k;
+                        break;
+                    }
+                    case "Vatrogasni kombi": {
+                        VatrogasniKombi k = new VatrogasniKombi(nazivTextField.getText(), brojSasijeTextField.getText(), brojMotoraTextField.getText(), fileFoto, registarskiBrojTextField.getText(), Integer.valueOf(brojVrataIliNosivostTextField.getText()));
+                        izmjenjeno = App.garaza.izmjeniVoziloNaPlatformi(AdminController.trenutnaPlatforma, k);
+                        if(izmjenjeno)
+                            izmjenjenoVozilo=k;
+                        break;
+                    }
+                    case "Policijski motocikl": {
+                        PolicijskiMotocikl m = new PolicijskiMotocikl(nazivTextField.getText(), brojSasijeTextField.getText(), brojMotoraTextField.getText(), fileFoto, registarskiBrojTextField.getText());
+                        izmjenjeno = App.garaza.izmjeniVoziloNaPlatformi(AdminController.trenutnaPlatforma, m);
+                        if(izmjenjeno)
+                            izmjenjenoVozilo=m;
+                        break;
+                    }
+                }
+                AdminController.izmjenjenoVozilo=izmjenjenoVozilo;
+                if(izmjenjeno){
+                    //ako je izmjenjeno ponovo učitaj podatke u tabelu platforme
+                    
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION,
+                            "Uspjesno ste se izmjenili vozilo!", ButtonType.OK);
+
+                    alert.showAndWait();
+                    Stage stage = (Stage) dodajButton.getScene().getWindow();
+                    stage.close();
+                    ;
+                }
+            }
+        });
         
         dodajButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -101,57 +248,57 @@ public class VoziloController implements Initializable {
                 
                     case "Automobil": 
                         {
-                            Automobil a = new Automobil(nazivTextField.getText(), brojSasijeTextField.getText(), brojMotoraTextField.getText(), "foto", registarskiBrojTextField.getText(), Integer.valueOf(brojVrataIliNosivostTextField.getText()));
+                            Automobil a = new Automobil(nazivTextField.getText(), brojSasijeTextField.getText(), brojMotoraTextField.getText(), fileFoto, registarskiBrojTextField.getText(), Integer.valueOf(brojVrataIliNosivostTextField.getText()));
                             dodanoVozilo = App.garaza.dodavanjeVozilaNaParkingMjesto(AdminController.trenutnaPlatforma, a);
                            // AdminController.listaVozila.add(a);
                             break;
                         }                       
                     case "Kombi": 
                         {
-                            Kombi k = new Kombi(nazivTextField.getText(), brojSasijeTextField.getText(), brojMotoraTextField.getText(), "foto", registarskiBrojTextField.getText(), Integer.valueOf(brojVrataIliNosivostTextField.getText()));
+                            Kombi k = new Kombi(nazivTextField.getText(), brojSasijeTextField.getText(), brojMotoraTextField.getText(), fileFoto, registarskiBrojTextField.getText(), Integer.valueOf(brojVrataIliNosivostTextField.getText()));
                             dodanoVozilo = App.garaza.dodavanjeVozilaNaParkingMjesto(AdminController.trenutnaPlatforma, k); 
                             break;
                         }
                     case "Motocikl": 
                         {
-                            Motocikl m = new Motocikl(nazivTextField.getText(), brojSasijeTextField.getText(), brojMotoraTextField.getText(), "foto", registarskiBrojTextField.getText());
+                            Motocikl m = new Motocikl(nazivTextField.getText(), brojSasijeTextField.getText(), brojMotoraTextField.getText(), fileFoto, registarskiBrojTextField.getText());
                             dodanoVozilo = App.garaza.dodavanjeVozilaNaParkingMjesto(AdminController.trenutnaPlatforma, m);     
                             break;
                         }
                         
                     case "Policijski automobil": 
                         {
-                            PolicijskiAutomobil a = new PolicijskiAutomobil(nazivTextField.getText(), brojSasijeTextField.getText(), brojMotoraTextField.getText(), "foto", registarskiBrojTextField.getText(), Integer.valueOf(brojVrataIliNosivostTextField.getText()));
+                            PolicijskiAutomobil a = new PolicijskiAutomobil(nazivTextField.getText(), brojSasijeTextField.getText(), brojMotoraTextField.getText(), fileFoto, registarskiBrojTextField.getText(), Integer.valueOf(brojVrataIliNosivostTextField.getText()));
                             dodanoVozilo = App.garaza.dodavanjeVozilaNaParkingMjesto(AdminController.trenutnaPlatforma, a); 
                             break;
                         }
                     case "Sanitetski automobil": 
                         {
-                            SanitetskiAutomobil a = new SanitetskiAutomobil(nazivTextField.getText(), brojSasijeTextField.getText(), brojMotoraTextField.getText(), "foto", registarskiBrojTextField.getText(), Integer.valueOf(brojVrataIliNosivostTextField.getText()));
+                            SanitetskiAutomobil a = new SanitetskiAutomobil(nazivTextField.getText(), brojSasijeTextField.getText(), brojMotoraTextField.getText(), fileFoto, registarskiBrojTextField.getText(), Integer.valueOf(brojVrataIliNosivostTextField.getText()));
                             dodanoVozilo = App.garaza.dodavanjeVozilaNaParkingMjesto(AdminController.trenutnaPlatforma, a);     
                             break;
                         }
                     case "Policijski kombi": 
                         {
-                            PolicijskiKombi k = new PolicijskiKombi(nazivTextField.getText(), brojSasijeTextField.getText(), brojMotoraTextField.getText(), "foto", registarskiBrojTextField.getText(), Integer.valueOf(brojVrataIliNosivostTextField.getText()));
+                            PolicijskiKombi k = new PolicijskiKombi(nazivTextField.getText(), brojSasijeTextField.getText(), brojMotoraTextField.getText(), fileFoto, registarskiBrojTextField.getText(), Integer.valueOf(brojVrataIliNosivostTextField.getText()));
                             dodanoVozilo = App.garaza.dodavanjeVozilaNaParkingMjesto(AdminController.trenutnaPlatforma, k);  
                             break;
                         }
                     case "Sanitetski kombi": 
                         {
-                            SanitetskiKombi k = new SanitetskiKombi(nazivTextField.getText(), brojSasijeTextField.getText(), brojMotoraTextField.getText(), "foto", registarskiBrojTextField.getText(), Integer.valueOf(brojVrataIliNosivostTextField.getText()));
+                            SanitetskiKombi k = new SanitetskiKombi(nazivTextField.getText(), brojSasijeTextField.getText(), brojMotoraTextField.getText(), fileFoto, registarskiBrojTextField.getText(), Integer.valueOf(brojVrataIliNosivostTextField.getText()));
                             dodanoVozilo = App.garaza.dodavanjeVozilaNaParkingMjesto(AdminController.trenutnaPlatforma, k); 
                             break;
                         }
                     case "Vatrogasni kombi": 
                         {
-                            VatrogasniKombi k = new VatrogasniKombi(nazivTextField.getText(), brojSasijeTextField.getText(), brojMotoraTextField.getText(), "foto", registarskiBrojTextField.getText(), Integer.valueOf(brojVrataIliNosivostTextField.getText()));
+                            VatrogasniKombi k = new VatrogasniKombi(nazivTextField.getText(), brojSasijeTextField.getText(), brojMotoraTextField.getText(), fileFoto, registarskiBrojTextField.getText(), Integer.valueOf(brojVrataIliNosivostTextField.getText()));
                             dodanoVozilo = App.garaza.dodavanjeVozilaNaParkingMjesto(AdminController.trenutnaPlatforma, k); 
                             break;
                         }
                     case "Policijski motocikl": 
                         {
-                            PolicijskiMotocikl m = new PolicijskiMotocikl(nazivTextField.getText(), brojSasijeTextField.getText(), brojMotoraTextField.getText(), "foto", registarskiBrojTextField.getText());
+                            PolicijskiMotocikl m = new PolicijskiMotocikl(nazivTextField.getText(), brojSasijeTextField.getText(), brojMotoraTextField.getText(), fileFoto, registarskiBrojTextField.getText());
                             dodanoVozilo = App.garaza.dodavanjeVozilaNaParkingMjesto(AdminController.trenutnaPlatforma, m);   
                             break;
                         }                        
@@ -162,7 +309,6 @@ public class VoziloController implements Initializable {
                             "Uspjesno ste se dodali novo vozilo!", ButtonType.OK);
 
                     alert.showAndWait();
-                   // AdminController.popuniListuNaPlatformi(AdminController.trenutnaPlatforma);
                     Stage stage = (Stage) dodajButton.getScene().getWindow();
                     stage.close();
                 }
