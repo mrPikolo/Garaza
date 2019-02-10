@@ -13,19 +13,17 @@ import java.util.logging.Logger;
 public class Evidencija {
     
     public static Handler handler;
-    {
-        try {
-            handler = new FileHandler("./garazaFajlovi/error.log");
-        } catch (Exception ex) {
-            Logger logger = Logger.getLogger(Evidencija.class.getName());
-            logger.addHandler(handler);
-            logger.log(Level.SEVERE, null, ex);
-        } 
+    static final Logger LOGGER = Logger.getLogger("Logger");
+    static {
+            try {
+                handler = new FileHandler("/garazaFajlovi/error.log");
+                LOGGER.addHandler(handler);
+            } catch (Exception ex) {}
     }
     
-    public static void log(Level level,String name,Exception ex) {
-        Logger logger = Logger.getLogger(name);
-        logger.addHandler(handler);
-        logger.log(level,ex.fillInStackTrace().toString());
+    public static void setErrorLog(Exception ex) {
+        StackTraceElement elements[] = ex.getStackTrace();
+	for (StackTraceElement element:elements) 
+            LOGGER.log(Level.WARNING, element.toString());
     }
 }
