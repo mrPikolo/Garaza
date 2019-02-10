@@ -29,6 +29,10 @@ import javafx.stage.Stage;
 import garaza.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -49,7 +53,11 @@ public class AdminController implements Initializable {
     
     public static int trenutnaPlatforma = 0;
     
+    public static Vozilo izmjenjenoVozilo;
+    
     public static ObservableList listaVozila = FXCollections.observableArrayList();
+    
+    public static ObservableList listaRednihBrojevaPlatformi = FXCollections.observableArrayList();
 
      @FXML
     private Button obrisiVoziloButton;
@@ -90,10 +98,25 @@ public class AdminController implements Initializable {
     @FXML
     private Button dodajPlatformuButton;
     
+    @FXML
+    private Button prikaziFotoButton;
+    
+    public static String fotoVozila;
+    
+    @FXML
+    void promjenaPlatforme(ActionEvent event) {
+        // azurira redni broj odabrane platforme
+       redniBrojOdabranePlatforme(); 
+        //tabelaVozlaTableView.setItems(vozilaNaPlatformi(trenutnaPlatforma));
+        popuniTabelu();
+    }
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) { 
-        
+        trenutnaPlatforma = 0;
+        //izborPlatformeComboBox.setValue(String.valueOf(trenutnaPlatforma));
         popuniListuPlatformi();
+
         
         ObservableList listaVozila = FXCollections.observableArrayList("Automobil","Policijski automobil","Sanitetski automobil",
                 "Kombi","Sanitetski kombi","Policijski kombi","Vatrogasni kombi",
@@ -101,6 +124,103 @@ public class AdminController implements Initializable {
         tipVozilaComboBox.setItems(listaVozila); 
         tipVozilaComboBox.getSelectionModel().selectFirst();
         
+        popuniTabelu();
+        
+        prikaziFotoButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                fotoVozila = tabelaVozlaTableView.getSelectionModel().getSelectedItem().foto;
+                try {
+                    Stage stage = new Stage();
+                    stage.setResizable(false);
+                    String resurs = "/korisnici/administrator/prikazSlikeVozila.fxml";
+                    Pane myPane = (Pane) FXMLLoader.load(getClass().getResource(resurs));
+                    Scene myScene = new Scene(myPane);
+                    stage.setScene(myScene);
+                    stage.setTitle("Slika vozila");
+                    stage.showAndWait();
+                } catch (IOException ex) {
+                    Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        
+        obrisiVoziloButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                
+                redniBrojOdabranePlatforme();
+                Vozilo v = tabelaVozlaTableView.getSelectionModel().getSelectedItem();
+                listaVozilaNaTrenutnojPlatformi(trenutnaPlatforma).remove(v);
+                redniBrojOdabranePlatforme();
+                tabelaVozlaTableView.setItems(vozilaNaPlatformi(trenutnaPlatforma));
+                //System.out.println("Vozila na platformi " + trenutnaPlatforma + " poslije brisanja su: " + vozilaNaPlatformi(trenutnaPlatforma) );
+            }
+        });
+        
+        dodajVoziloButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                
+                if(izborPlatformeComboBox.getValue()==null){
+                    Alert alert = new Alert(Alert.AlertType.ERROR,
+                            "Niste odabrali platformu!", ButtonType.OK);
+
+                    alert.showAndWait();
+                    //Stage stage = (Stage) dodajVoziloButton.getScene().getWindow();
+                    //stage.close();
+                    }
+                else{
+                tipVozila=tipVozilaComboBox.getValue().toString();
+                dodajIliIzmjeniVozilo="Dodaj vozilo";
+                redniBrojOdabranePlatforme();
+                otvoriVoziloGUI();    
+                tabelaVozlaTableView.setItems(vozilaNaPlatformi(trenutnaPlatforma));
+                }
+            }
+        });
+        
+        izmjeniVoziloButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Garaza.listaPlatformi.get(trenutnaPlatforma - 1).zamjenaVozila = tabelaVozlaTableView.getSelectionModel().getSelectedItem();
+                
+                tipVozila=tipVozilaComboBox.getValue().toString();
+                dodajIliIzmjeniVozilo="Izmjeni vozilo";
+                redniBrojOdabranePlatforme();
+                otvoriVoziloGUI();  
+                popuniTabelu();
+            }
+        });
+        
+        dodajPlatformuButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (App.garaza.dodajPlatformu()) {
+                //dodajPlatformu();
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION,
+                            "Uspjesno ste se dodali novu platformu!", ButtonType.OK);
+                    alert.showAndWait();
+                }
+                //dodajPlatformuUComoboBox();
+                popuniListuPlatformi();
+            }
+        });
+        
+        pokreniKorisnikaButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                App.garaza.serijalizuj();
+                //App.garaza.deserijalizuj();
+                //popuniListuPlatformi();
+                minBrojVozilaGUI();
+                Stage stage = (Stage) pokreniKorisnikaButton.getScene().getWindow();
+                stage.close();
+            }
+        });
+    } 
+    
+    public void popuniTabelu(){
         tipVozilaTableColumn.setCellValueFactory(new PropertyValueFactory<Vozilo, String>("tip"));
         nazivVozilaTableColumn.setCellValueFactory(new PropertyValueFactory<Vozilo, String>("naziv"));
         brojSasijeVozilaTableColumn.setCellValueFactory(new PropertyValueFactory<Vozilo, String>("brSasije"));
@@ -110,43 +230,7 @@ public class AdminController implements Initializable {
         //popuniti tabelu sa listom vozila sa platforme
        
         tabelaVozlaTableView.setItems(vozilaNaPlatformi(trenutnaPlatforma));
-        
-        dodajVoziloButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                tipVozila=tipVozilaComboBox.getValue().toString();
-                dodajIliIzmjeniVozilo="Dodaj vozilo";
-                redniBrojOdabranePlatforme();
-                otvoriVoziloGUI(); 
-                System.out.println("TEST");    
-                tabelaVozlaTableView.setItems(vozilaNaPlatformi(trenutnaPlatforma));
-
-            }
-        });
-        
-        izmjeniVoziloButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                tipVozila=tipVozilaComboBox.getValue().toString();
-                dodajIliIzmjeniVozilo="Izmjeni vozilo";
-                redniBrojOdabranePlatforme();
-                otvoriVoziloGUI();                
-            }
-        });
-        
-        dodajPlatformuButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-
-                if (App.garaza.dodajPlatformu()) {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                            "Uspjesno ste se dodali novu platformu!", ButtonType.OK);
-                    alert.showAndWait();
-                }
-                popuniListuPlatformi();
-            }
-        });
-    }  
+    }
     
     public ObservableList listaAutomobilaNaPlatformi() {
         Platforma p = Garaza.listaPlatformi.get(trenutnaPlatforma);
@@ -154,6 +238,20 @@ public class AdminController implements Initializable {
             listaVozila.add(v);
         return listaVozila;
     }
+    
+    public ObservableList listaAutomobilaNaPlatformi(int indeksPlatforme) {
+        Platforma p = Garaza.listaPlatformi.get(indeksPlatforme-1);
+        for(Vozilo v: (p.listaVozilaNaPlatformi))
+            listaVozila.add(v);
+        return listaVozila;
+    }
+    
+   public ObservableList izmjenjenAutomobilaNaPlatformi(int indeksPlatforme,Vozilo izmjenjnoVozilo) {
+        Platforma p = Garaza.listaPlatformi.get(indeksPlatforme-1);
+        for(Vozilo v: (p.listaVozilaNaPlatformi))
+            listaVozila.add(v);
+        return listaVozila;
+    } 
     
     public static void popuniListuNaPlatformi(int brojPlatforme){
         System.out.println("Broj platforme: " + (brojPlatforme-1));
@@ -164,11 +262,33 @@ public class AdminController implements Initializable {
        // System.out.println("iz popuniListuNaPlatformi(int brojPlatforme) je lista: " + listaVozila);
     }
     
-    private void popuniListuPlatformi(){
-        ObservableList listaRednihBrojevaPlatformi = FXCollections.observableArrayList();
-        for(int i=0;i<Garaza.listaPlatformi.size();i++)
-            listaRednihBrojevaPlatformi.add(i+1);
+    private void dodajPlatformuUComoboBox(){
+        listaRednihBrojevaPlatformi.add(Garaza.listaPlatformi.size()+1);
         izborPlatformeComboBox.setItems(listaRednihBrojevaPlatformi);
+    }
+    
+    private void popuniListuPlatformi(){
+        
+       // System.out.println("Garaza.listaPlatformi.size() : " + Garaza.listaPlatformi.size());
+       // System.out.println("listaRednihBrojevaPlatformi.size() : " + listaRednihBrojevaPlatformi.size());
+        while(Garaza.listaPlatformi.size()!= listaRednihBrojevaPlatformi.size())
+            listaRednihBrojevaPlatformi.add(listaRednihBrojevaPlatformi.size()+1);
+        System.out.println("listaRednihBrojevaPlatformi.size() nakon dodavanja: " + listaRednihBrojevaPlatformi.size());
+        izborPlatformeComboBox.setItems(listaRednihBrojevaPlatformi);
+    }
+    
+    private void minBrojVozilaGUI() {
+        try {
+            Stage stage = new Stage();
+            stage.setResizable(false);
+            String resurs = "/korisnici/korisnik/minBrojVozila.fxml";
+            Pane myPane = (Pane) FXMLLoader.load(getClass().getResource(resurs));
+            Scene myScene = new Scene(myPane);
+            stage.setScene(myScene);
+            stage.showAndWait();
+        } catch (IOException ex) {
+            Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     private void otvoriVoziloGUI() {
@@ -186,8 +306,17 @@ public class AdminController implements Initializable {
         }
     }
     
-    public void redniBrojOdabranePlatforme(){      
+    public void redniBrojOdabranePlatforme(){ 
+        System.out.println("trenutnaPlatforma = " + trenutnaPlatforma );
+        
+        System.out.println("izborPlatformeComboBox.getValue().toString() = " + izborPlatformeComboBox.getValue().toString());
         trenutnaPlatforma = Integer.valueOf(izborPlatformeComboBox.getValue().toString()); 
+    }
+    
+    private ArrayList listaVozilaNaTrenutnojPlatformi(int brojPlatforme){
+        int broj = brojPlatforme==0?0:brojPlatforme-1;        
+        Platforma trenutanPlatforma=Garaza.listaPlatformi.get(broj);
+        return trenutanPlatforma.listaVozilaNaPlatformi;
     }
     
     public static ObservableList<Vozilo> vozilaNaPlatformi(int brojPlatforme)
