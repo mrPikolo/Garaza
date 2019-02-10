@@ -38,14 +38,18 @@ public class Garaza implements Serializable{
     }
     
     public boolean dodajPlatformu(){
-        boolean dodanaPlatforma;
+        boolean dodanaPlatforma = false;
         int brPlatformiPrije = listaPlatformi.size();
         listaPlatformi.add(new Platforma());
-        if(listaPlatformi.size()>brPlatformiPrije)
+        if(listaPlatformi.size()> brPlatformiPrije)
             dodanaPlatforma = true;
-        else
-            dodanaPlatforma = false;
+        //else
+          //  dodanaPlatforma = false;
         return dodanaPlatforma;
+    }
+    
+    public boolean izmjeniVoziloNaPlatformi(int redBrojPlatforme,Vozilo vozilo){
+        return listaPlatformi.get(redBrojPlatforme-1).izmjenaNaVozilu(vozilo);
     }
     
     public boolean dodavanjeVozilaNaParkingMjesto(int redBrojPlatforme,Vozilo vozilo){
@@ -78,20 +82,27 @@ public class Garaza implements Serializable{
     }
     
     public void serijalizuj(){
-        try (FileOutputStream fos = new FileOutputStream("./garazaFajlovi/garaza.ser");
+        try (FileOutputStream fos = new FileOutputStream("./src/garazaFajlovi/garaza.ser");
                 ObjectOutputStream out = new ObjectOutputStream(fos)) {
             out.writeObject(listaPlatformi);
+            System.out.println("serijalizacija garaze");
         } catch (Exception e) {
-            Evidencija.log(Level.WARNING, Garaza.class.getName(), e);
+            e.printStackTrace();
+           // Evidencija.log(Level.WARNING, Garaza.class.getName(), e);
         }
     }
     
     public void deserijalizuj() {
-        try (FileInputStream fis = new FileInputStream("./garazaFajlovi/garaza.ser");
+        try (FileInputStream fis = new FileInputStream("./src/garazaFajlovi/garaza.ser");
                 ObjectInputStream in = new ObjectInputStream(fis)) {
             listaPlatformi = (ArrayList<Platforma>) in.readObject();
+            if(listaPlatformi!=null){
+                System.out.println("deserijalizacija garaze");
+                System.out.println(listaPlatformi);
+            }
+            
         } catch (Exception e) {
-            Evidencija.log(Level.WARNING, Garaza.class.getName(), e);
+            Evidencija.setErrorLog(e);
         }
     }    
 }
