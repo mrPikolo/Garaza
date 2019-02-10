@@ -2,7 +2,7 @@ package garaza;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import vozila.Vozilo;
+import vozila.*;
 
 /**
  *
@@ -14,6 +14,7 @@ public class Platforma implements Serializable{
     public boolean popunjena;
     public MjestoNaPlatformi[][] matrica;
     public ArrayList<Vozilo> listaVozilaNaPlatformi = new ArrayList<>();
+    public Vozilo zamjenaVozila;
     
     public Platforma(){
         
@@ -37,7 +38,29 @@ public class Platforma implements Serializable{
         
         brSlobodnihMjesta = 28;
         popunjena=false;
-    }    
+    }  
+    
+    public boolean izmjenaNaVozilu(Vozilo izmjenjenoVozilo){
+        boolean izmjenjeno = false;
+        int idVozilaZaIzmjenu = listaVozilaNaPlatformi.indexOf(zamjenaVozila);        
+        Vozilo voziloZaIzmjenu = listaVozilaNaPlatformi.get(idVozilaZaIzmjenu);
+        
+        if (izmjenjenoVozilo != null) {
+            zamjenaVozila.naziv = izmjenjenoVozilo.naziv;
+            zamjenaVozila.brMotora = izmjenjenoVozilo.brMotora;
+            zamjenaVozila.brSasije = izmjenjenoVozilo.brSasije;
+            zamjenaVozila.foto = izmjenjenoVozilo.foto;
+            zamjenaVozila.registarskiBroj = izmjenjenoVozilo.registarskiBroj;
+            
+            izmjenjeno=true; 
+        }
+        
+        return izmjenjeno;
+    }
+    
+    public void dodajVoziloUListuPlatforme(Vozilo v){
+        listaVozilaNaPlatformi.add(v);
+    }
     
     public ArrayList<Vozilo> getListaVozilaNaPlatformi() {
         return listaVozilaNaPlatformi;
